@@ -1,0 +1,125 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 /*\
+\
+\
+  The circuit:\
+   LCD RS pin to digital pin 12\
+   LCD Enable pin to digital pin 11\
+   LCD D4 pin to digital pin 5\
+   LCD D5 pin to digital pin 4\
+   LCD D6 pin to digital pin 3\
+   LCD D7 pin to digital pin 2\
+   LCD R/W pin to ground\
+   LCD VSS pin to ground\
+   LCD VCC pin to 5V\
+   10K resistor:\
+   ends to +5V and ground\
+   wiper to LCD VO pin (pin 3)\
+\
+\
+\
+*/\
+\
+// include the library code:\
+#include <LiquidCrystal.h>\
+\
+// initialize the library by associating any needed LCD interface pin\
+// with the arduino pin number it is connected to\
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;\
+const int buttonPin = 7;     // the number of the pushbutton pin\
+const int ledPin =  13;\
+int buttonState = 0;\
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);\
+String msgs1[] = \{"The killers", "The victims", "Their friends", "The guards", "The dead", "The living", "The funerals", "Underworlds", "Mourners", "Mortals", "Demons", "The potions", "People", "The evils", "Nightmares", "Hauntings", "The survivors", "Graveyards", "Deaths", "Phantoms"\};\
+String msgs2[] = \{"are back now...", "are repulsive...", "are gross...", "are weird...", "are evil...", "had gore...", "had safety...", "had no brains...", "had no end...", "began it...", "awakened...", "kill mortals...", "created hell...", "forbid help...", "won't stop...", "resists others...", "didn't work...", "started it...", "rised...", "started war..."\};\
+\
+\
+#include <CapacitiveSensor.h>\
+CapacitiveSensor   cs_4_2 = CapacitiveSensor(9, 8);       // 10M resistor between pins 4 & 2, pin 2 is sensor pin, add a wire and or foil if desired\
+\
+\
+\
+\
+void setup() \{\
+  // set up the LCD's number of columns and rows:\
+  lcd.begin(16, 2);\
+  pinMode(ledPin, OUTPUT);\
+  pinMode(buttonPin, INPUT);\
+  // Print a message to the LCD.\
+  //lcd.print(msgs1[0]);\
+  displayText1(0);\
+  displayText2(0);\
+  // lcd.setCursor(0, 1);\
+  //lcd.print(msgs2[random(0,20)]);\
+  cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);     // turn off autocalibrate on channel 1 - just as an example\
+  Serial.begin(9600);\
+\}\
+\
+void loop() \{\
+  // set the cursor to column 0, line 1\
+  // (note: line 1 is the second row, since counting begins with 0):\
+  // lcd.setCursor(0, 1);\
+  // print the number of seconds since reset:\
+  // lcd.print(millis() / 1000);\
+  long start = millis();\
+  long total1 =  cs_4_2.capacitiveSensor(30);\
+\
+\
+  float r1 = random(0, 20 );\
+  float r2 = random(0, 20);\
+\
+  Serial.println(total1);\
+  if (total1 > 200) \{\
+    Serial.println("touched");\
+     lcd.clear();\
+    displayText1(r1);\
+    displayText2(r2);\
+  \}\
+\
+\
+  buttonState = digitalRead(buttonPin);\
+\
+  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:\
+  if (buttonState == HIGH) \{\
+    // turn LED on:\
+    digitalWrite(ledPin, HIGH);\
+    lcd.clear();\
+    displayText1(r1);\
+    displayText2(r2);\
+\
+  \} else \{\
+    // turn LED off:\
+    digitalWrite(ledPin, LOW);\
+  \}\
+\
+\
+\}\
+void displayText1(int value) \{\
+  lcd.setCursor(0, 0);\
+  lcd.print(msgs1[value]);\
+  //  for (int positionCounter = 0; positionCounter < 32; positionCounter++) \{\
+  //    // scroll one position left:\
+  //    lcd.scrollDisplayLeft();\
+  //    // wait a bit:\
+  //    delay(150);\
+  //  \}\
+\
+\}\
+\
+void displayText2(int value) \{\
+  lcd.setCursor(0, 1);\
+  lcd.print(msgs2[value]);\
+  //  for (int positionCounter = 0; positionCounter < 32; positionCounter++) \{\
+  //    // scroll one position left:\
+  //    lcd.scrollDisplayLeft();\
+  //    // wait a bit:\
+  //    delay(150);\
+  //  \}\
+\
+\}\
+}
